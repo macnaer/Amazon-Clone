@@ -15,6 +15,14 @@ pipeline  {
                 sh "find BackEnd/Amazon-clone/ -type f -exec sed  -i 's#Server=20.240.61.200#Server=51.21.128.141#g' {} +"
              }
          }
+        stage("Change Database Password in appsettings.json")
+         {
+             steps{
+                withCredentials([string(credentialsId: 'MSSQL-PASSWORD',  variable: 'PASSWD')]){
+                    sh "find BackEnd/Amazon-clone/ -type f -exec sed  -i 's#Password=Qwerty-1#Password=$PASSWD#g' {} +"
+                }
+             }
+         }
         stage("Create backend docker image") {
             steps {
                 echo 'Creating backend docker image ...'
@@ -31,11 +39,11 @@ pipeline  {
                 }
             }
         }
-        stage("docker frontend push") {
+        stage("docker backend push") {
             steps {
                 echo " ============== pushing amazon-clone-backend image =================="
                 sh '''
-                docker push  macnaer/amazon-clone-backend
+                docker push macnaer/amazon-clone-backend
                 '''
             }
         }
